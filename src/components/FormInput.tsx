@@ -8,6 +8,7 @@ interface FormInputProps {
   className: string;
   type?: string;
   required?: boolean;
+  ariaLabel?: string;
 }
 
 const FormInput = ({
@@ -17,6 +18,7 @@ const FormInput = ({
   className,
   type = "text",
   required = false,
+  ariaLabel = "",
 }: FormInputProps) => {
   const formContext = useContext(FormContext);
   const { form, handleFormChange } = formContext;
@@ -34,6 +36,7 @@ const FormInput = ({
         value={form[id]}
         onChange={handleFormChange}
         required={required}
+        aria-label={ariaLabel}
       />
     </>
   );

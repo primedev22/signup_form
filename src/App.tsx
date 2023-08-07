@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import FormInput from "./components/FormInput";
 import FormContext from "./contexts/FormContext";
 import "./App.css";
@@ -10,13 +10,21 @@ const App = () => {
     pswdRepeat: "",
   });
 
+  useEffect(() => {
+    const formJsonStr = localStorage.getItem("singup-form-json");
+    if (formJsonStr) {
+      const formJson = JSON.parse(formJsonStr);
+      setForm(formJson);
+    }
+  }, []);
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-
-    setForm({
+    const updatedForm = {
       ...form,
       [id]: value,
-    });
+    };
+    setForm(updatedForm);
+    localStorage.setItem("singup-form-json", JSON.stringify(updatedForm));
   };
 
   const isPswdMismatch = useMemo(() => form.pswd !== form.pswdRepeat, [form]);
@@ -46,6 +54,7 @@ const App = () => {
             placeholder="Enter Email"
             className="email-input"
             type="email"
+            ariaLabel="email"
             required
           />
           <FormInput
@@ -54,6 +63,7 @@ const App = () => {
             placeholder="Enter Password"
             className="pswd-input"
             type="password"
+            ariaLabel="password"
             required
           />
           <FormInput
@@ -62,6 +72,7 @@ const App = () => {
             placeholder="Confirm Password"
             className="pswd-repeat-input"
             type="password"
+            ariaLabel="repeat password"
             required
           />
           <button
