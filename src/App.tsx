@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import CryptoJS from 'crypto-js';
 import FormInput from "./components/FormInput";
 import FormContext from "./contexts/FormContext";
 import "./App.css";
@@ -13,7 +14,8 @@ const App = () => {
   useEffect(() => {
     const formJsonStr = localStorage.getItem("singup-form-json");
     if (formJsonStr) {
-      const formJson = JSON.parse(formJsonStr);
+      const bytes = CryptoJS.AES.decrypt(formJsonStr, process.env.REACT_APP_ENCRYPTION_KEY as string)
+      const formJson = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
       setForm(formJson);
     }
   }, []);
@@ -24,7 +26,10 @@ const App = () => {
       [id]: value,
     };
     setForm(updatedForm);
-    localStorage.setItem("singup-form-json", JSON.stringify(updatedForm));
+    localStorage.setItem("singup-form-json", CryptoJS.AES.encrypt(
+      JSON.stringify(updatedForm),
+      process.env.REACT_APP_ENCRYPTION_KEY as string
+    ).toString());
   };
 
   const isPswdMismatch = useMemo(() => form.pswd !== form.pswdRepeat, [form]);
